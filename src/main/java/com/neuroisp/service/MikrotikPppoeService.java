@@ -20,18 +20,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MikrotikPppoeService {
 
-
+    private final MikrotikService mikrotikService;
 
     public void createPppoeUser(
             MikrotikRouter router,
             PppoeUser user,
             PppoePackage pkg
     ) {
-        try (ApiConnection api = ApiConnection.connect(router.getIpAddress())) {
+        try (ApiConnection api = mikrotikService.connect(router)) {
 
-            api.login(router.getUsername(), router.getPassword());
-            System.out.println(router.getUsername());
-            System.out.println(router.getPassword());
             String command = String.format(
                     "/ppp/secret/add name=%s password=%s service=pppoe profile=%s",
                     user.getUsername(),
@@ -47,16 +44,14 @@ public class MikrotikPppoeService {
     }
 
 
+
     public void disablePppoeUser(MikrotikRouter router, String username) {
 
-        try (ApiConnection api = ApiConnection.connect(router.getIpAddress())) {
+        try (ApiConnection api = mikrotikService.connect(router)) {
 
-            api.login(router.getUsername(), router.getPassword());
-            // 1️⃣ Get all secrets
             List<Map<String, String>> secrets =
                     api.execute("/ppp/secret/print");
 
-            // 2️⃣ Find matching user
             String secretId = secrets.stream()
                     .filter(s -> username.equals(s.get("name")))
                     .map(s -> s.get(".id"))
@@ -67,8 +62,7 @@ public class MikrotikPppoeService {
 
             String command = String.format(
                     "/ppp/secret/set .id=%s disabled=yes",
-                    secretId,
-                    username
+                    secretId
             );
 
             api.execute(command);
@@ -77,21 +71,18 @@ public class MikrotikPppoeService {
             throw new RuntimeException("Failed to disable PPPoE user", e);
         }
     }
+
     public void updateProfile(
             MikrotikRouter router,
             String username,
             String password,
             String newProfile
     ) {
-        try (ApiConnection api = ApiConnection.connect(router.getIpAddress())) {
+        try (ApiConnection api = mikrotikService.connect(router)) {
 
-            api.login(router.getUsername(), router.getPassword());
-
-            // 1️⃣ Get all secrets
             List<Map<String, String>> secrets =
                     api.execute("/ppp/secret/print");
 
-            // 2️⃣ Find matching user
             String secretId = secrets.stream()
                     .filter(s -> username.equals(s.get("name")))
                     .map(s -> s.get(".id"))
@@ -100,11 +91,10 @@ public class MikrotikPppoeService {
                             new RuntimeException("PPPoE user not found on MikroTik: " + username)
                     );
 
-            // 3️⃣ Update profile using .id
             String command = String.format(
                     "/ppp/secret/set .id=%s profile=%s",
-                   secretId,
-                 newProfile
+                    secretId,
+                    newProfile
             );
 
             api.execute(command);
@@ -114,17 +104,15 @@ public class MikrotikPppoeService {
         }
     }
 
+
     // ✅ ADD THIS METHOD (nothing else changes)
     public void enablePppoeUser(MikrotikRouter router, String username) {
 
-        try (ApiConnection api = ApiConnection.connect(router.getIpAddress())) {
-
-            api.login(router.getUsername(), router.getPassword());
+        try (ApiConnection api = mikrotikService.connect(router)) {
 
             List<Map<String, String>> secrets =
                     api.execute("/ppp/secret/print");
 
-            // 2️⃣ Find matching user
             String secretId = secrets.stream()
                     .filter(s -> username.equals(s.get("name")))
                     .map(s -> s.get(".id"))
@@ -135,8 +123,7 @@ public class MikrotikPppoeService {
 
             String command = String.format(
                     "/ppp/secret/set .id=%s disabled=no",
-                    secretId,
-                    username
+                    secretId
             );
 
             api.execute(command);
