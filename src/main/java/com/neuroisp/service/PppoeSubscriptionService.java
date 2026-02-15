@@ -89,12 +89,14 @@ public class PppoeSubscriptionService {
 
 
         IspCompany isp = ispCompanyService.getActiveCompany();
-
+        try {
         smsService.send(
                 isp,
                 sub.getUser().getPhoneNumber(),
                 PppoeSmsMessageBuilder.buildActivationMessage(isp, sub)
         );
+        } catch (Exception ignored) {}
+
 
         return sub;
     }

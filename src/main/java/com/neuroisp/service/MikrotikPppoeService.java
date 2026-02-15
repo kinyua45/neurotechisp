@@ -30,7 +30,8 @@ public class MikrotikPppoeService {
         try (ApiConnection api = ApiConnection.connect(router.getIpAddress())) {
 
             api.login(router.getUsername(), router.getPassword());
-
+            System.out.println(router.getUsername());
+            System.out.println(router.getPassword());
             String command = String.format(
                     "/ppp/secret/add name=%s password=%s service=pppoe profile=%s",
                     user.getUsername(),
