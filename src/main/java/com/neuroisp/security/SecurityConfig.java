@@ -96,7 +96,8 @@ public class SecurityConfig {
                 "http://127.0.0.1:4040",
                 "http://192.168.15.26:8000",
                 "https://gritfiber.netlify.app",
-                "https://gallant-spirit-production.up.railway.app"
+                "https://gallant-spirit-production.up.railway.app",
+                "https://astonishing-playfulness-production.up.railway.app"
 
         ));
 

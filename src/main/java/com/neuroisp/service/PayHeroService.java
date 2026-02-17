@@ -40,7 +40,7 @@ public class PayHeroService {
             payload.put("external_reference", sub.getId()); // Subscription ID
             payload.put("customer_name", sub.getPhoneNumber());
 
-            payload.put("callback_url", "https://gallant-spirit-production.up.railway.app/api/payhero/callback");
+            payload.put("callback_url", "https://astonishing-playfulness-production.up.railway.app/api/payhero/callback");
 
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(payload);
